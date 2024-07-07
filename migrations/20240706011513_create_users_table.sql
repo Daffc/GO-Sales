@@ -4,7 +4,10 @@ CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     name text,
     email text,
-    password text
+    password text,
+    created_at datetime,
+    updated_at datetime,
+    deleted_at datetime
 );
 -- +goose StatementEnd
 
