@@ -2,12 +2,13 @@
 -- +goose StatementBegin
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name text,
-    email text,
-    password text,
+    name text NOT NULL,
+    email text NOT NULL,
+    password text NOT NULL,
     created_at datetime,
     updated_at datetime,
-    deleted_at datetime
+    deleted_at datetime,
+    CONSTRAINT UC_Email UNIQUE (email)
 );
 -- +goose StatementEnd
 
