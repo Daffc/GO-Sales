@@ -35,6 +35,7 @@ func main() {
 	sm := http.NewServeMux()
 
 	sm.HandleFunc("POST /users", userHandler.CreateUser)
+	sm.HandleFunc("/users", userHandler.ListUsers)
 	sm.HandleFunc("/users/{userId}", userHandler.FindUserById)
 
 	fmt.Printf("Linstening on %s ...\n", config.ServerPort)

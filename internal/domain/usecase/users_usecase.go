@@ -33,18 +33,18 @@ func NewUsersUseCase(repository *repository.UserRepository) *UsersUseCase {
 	return &UsersUseCase{repository: repository}
 }
 func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, error) {
-	nu := model.User{
+	u := model.User{
 		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
 	}
 
-	err := nu.Validate()
+	err := u.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := uc.repository.CreateUser(&nu)
+	user, err := uc.repository.CreateUser(&u)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +58,27 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 	}
 
 	return &userDTO, nil
+}
+
+func (uc UsersUseCase) ListUsers() ([]*UserOutputDTO, error) {
+	us, err := uc.repository.ListUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	usersDTO := make([]*UserOutputDTO, len(us))
+
+	for i, u := range us {
+		usersDTO[i] = &UserOutputDTO{
+			ID:        int(u.ID),
+			Name:      u.Name,
+			Email:     u.Email,
+			CreatedAt: u.CreatedAt,
+			UpdatedAt: u.UpdatedAt,
+		}
+	}
+
+	return usersDTO, nil
 }
 
 func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, error) {

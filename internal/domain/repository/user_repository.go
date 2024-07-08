@@ -29,10 +29,10 @@ func (r *UserRepository) CreateUser(u *model.User) (*model.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) FindUserById(id int) (*model.User, error) {
-	user := &model.User{}
+func (r *UserRepository) ListUsers() ([]*model.User, error) {
+	us := []*model.User{}
 
-	result := r.db.First(&user, "id = ?", id)
+	result := r.db.Find(&us)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, result.Error
 	}
@@ -41,5 +41,20 @@ func (r *UserRepository) FindUserById(id int) (*model.User, error) {
 		return nil, result.Error
 	}
 
-	return user, nil
+	return us, nil
+}
+
+func (r *UserRepository) FindUserById(id int) (*model.User, error) {
+	u := &model.User{}
+
+	result := r.db.First(&u, "id = ?", id)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return nil, result.Error
+	}
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return u, nil
 }

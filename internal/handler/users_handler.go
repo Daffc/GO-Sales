@@ -32,6 +32,19 @@ func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(output)
 }
+
+func (uh *UsersHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
+
+	output, err := uh.UsersUseCase.ListUsers()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(output)
+}
+
 func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
