@@ -5,6 +5,7 @@ import (
 
 	"github.com/Daffc/GO-Sales/internal/domain/model"
 	"github.com/Daffc/GO-Sales/internal/domain/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CreateUserInputDTO struct {
@@ -43,6 +44,13 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 	if err != nil {
 		return nil, err
 	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 0)
+	if err != nil {
+		return nil, err
+	}
+
+	u.Password = string(hashedPassword)
 
 	user, err := uc.repository.CreateUser(&u)
 	if err != nil {
