@@ -16,16 +16,32 @@ func NewUsersHandler(usersUseCase *usecase.UsersUseCase) *UsersHandler {
 	return &UsersHandler{UsersUseCase: usersUseCase}
 }
 
-func (uh *UsersHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
+func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var input usecase.CreateUserInputDTO
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	output, err := uh.UsersUseCase.CreateUser(input)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(output)
+}
+func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	input := usecase.GetUserInputDTO{ID: userId}
+	input := usecase.FindUserInputDTO{ID: userId}
 
-	output, err := uh.UsersUseCase.GetUserById(input)
+	output, err := uh.UsersUseCase.FindUserById(input)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

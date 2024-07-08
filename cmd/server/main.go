@@ -34,7 +34,8 @@ func main() {
 
 	sm := http.NewServeMux()
 
-	sm.HandleFunc("/users/{userId}", userHandler.GetUserById)
+	sm.HandleFunc("POST /users", userHandler.CreateUser)
+	sm.HandleFunc("/users/{userId}", userHandler.FindUserById)
 
 	fmt.Printf("Linstening on %s ...\n", config.ServerPort)
 	err = http.ListenAndServe(":"+config.ServerPort, sm)

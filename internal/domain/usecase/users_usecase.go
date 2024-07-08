@@ -3,14 +3,21 @@ package usecase
 import (
 	"time"
 
+	"github.com/Daffc/GO-Sales/internal/domain/model"
 	"github.com/Daffc/GO-Sales/internal/domain/repository"
 )
 
-type GetUserInputDTO struct {
+type CreateUserInputDTO struct {
+	ID       int
+	Name     string
+	Email    string
+	Password string
+}
+type FindUserInputDTO struct {
 	ID int
 }
 
-type GetUserOutputDTO struct {
+type UserOutputDTO struct {
 	ID        int       `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
@@ -25,14 +32,24 @@ type UsersUseCase struct {
 func NewUsersUseCase(repository *repository.UserRepository) *UsersUseCase {
 	return &UsersUseCase{repository: repository}
 }
+func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, error) {
+	nu := model.User{
+		Name:     input.Name,
+		Email:    input.Email,
+		Password: input.Password,
+	}
 
-func (uc UsersUseCase) GetUserById(input GetUserInputDTO) (*GetUserOutputDTO, error) {
-	user, err := uc.repository.GetUserById(input.ID)
+	err := nu.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	userDTO := GetUserOutputDTO{
+	user, err := uc.repository.CreateUser(&nu)
+	if err != nil {
+		return nil, err
+	}
+
+	userDTO := UserOutputDTO{
 		ID:        int(user.ID),
 		Name:      user.Name,
 		Email:     user.Email,
@@ -41,5 +58,21 @@ func (uc UsersUseCase) GetUserById(input GetUserInputDTO) (*GetUserOutputDTO, er
 	}
 
 	return &userDTO, nil
+}
 
+func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, error) {
+	user, err := uc.repository.FindUserById(input.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	userDTO := UserOutputDTO{
+		ID:        int(user.ID),
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	return &userDTO, nil
 }
