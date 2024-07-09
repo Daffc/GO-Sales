@@ -39,7 +39,7 @@ func (u *User) Validate() error {
 		return ErrUserEmailRequired
 	}
 
-	if len(u.Password) >= 6 {
+	if len(u.Password) < 6 {
 		return ErrUserPasswordLenght
 	}
 
