@@ -9,10 +9,9 @@ import (
 )
 
 type CreateUserInputDTO struct {
-	ID       int
-	Name     string
-	Email    string
-	Password string
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 type FindUserInputDTO struct {
 	ID int

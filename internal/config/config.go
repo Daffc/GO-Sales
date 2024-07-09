@@ -13,9 +13,12 @@ type Database struct {
 	Password string `envconfig:"DB_PASSWORD" required:"true"`
 }
 
+type Server struct {
+	Port string `envconfig:"SERVER_PORT" default:"8080"`
+}
 type Config struct {
-	Database   Database
-	ServerPort string `envconfig:"SERVER_PORT" default:"8080"`
+	Database Database
+	Server   Server
 }
 
 func NewConfigParser() (*Config, error) {
