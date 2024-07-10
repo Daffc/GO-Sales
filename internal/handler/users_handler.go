@@ -81,7 +81,7 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	input := usecase.FindUserInputDTO{ID: userId}
+	input := usecase.FindUserInputDTO{ID: uint(userId)}
 
 	output, err := uh.UsersUseCase.FindUserById(input)
 	if err != nil {
@@ -91,4 +91,37 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(output)
+}
+
+// UpdateUserPassword Update user password.
+// @Summary		Update user password.
+// @Description	Update user password.
+// @Tags		Users
+// @Accept		json
+// @Produce		json
+// @Param		userId	path	int	true	"User ID"
+// @Param		input	body	usecase.UpdateUserPasswordInputDTO	true	"New user Password"
+// @Success		200
+// @Failure		500		{object}	string
+// @Router		/users/{userId}/password/	[post]
+func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
+
+	var input usecase.UpdateUserPasswordInputDTO
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	userId, err := strconv.Atoi(r.PathValue("userId"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	input.ID = uint(userId)
+	err = uh.UsersUseCase.UpdateUserPassword(input)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

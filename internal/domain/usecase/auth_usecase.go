@@ -45,6 +45,37 @@ func NewAuthUseCase(userRepository *repository.UserRepository, jwtSigningKey []b
 	return auc
 }
 
+func (ac AuthUseCase) NewAccessToken(c *UserClaims) (string, error) {
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
+	token, err := accessToken.SignedString(ac.JwtSigningKey)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
+
+func (ac AuthUseCase) ValidateAccessToken(t string) (*UserClaims, error) {
+	token, err := jwt.ParseWithClaims(
+		t,
+		&UserClaims{},
+		func(token *jwt.Token) (interface{}, error) {
+			return ac.JwtSigningKey, nil
+		})
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	claims, ok := token.Claims.(*UserClaims)
+	if !ok {
+		log.Println(err)
+		return nil, err
+	}
+
+	return claims, nil
+}
+
 func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error) {
 	user, err := ac.userRepository.FindUserByEmail(input.Email)
 	if err != nil {
@@ -84,35 +115,4 @@ func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error
 	}
 
 	return &userDTO, nil
-}
-
-func (ac AuthUseCase) NewAccessToken(c *UserClaims) (string, error) {
-	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-	token, err := accessToken.SignedString(ac.JwtSigningKey)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
-}
-
-func (ac AuthUseCase) ValidateAccessToken(t string) (*UserClaims, error) {
-	token, err := jwt.ParseWithClaims(
-		t,
-		&UserClaims{},
-		func(token *jwt.Token) (interface{}, error) {
-			return ac.JwtSigningKey, nil
-		})
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	claims, ok := token.Claims.(*UserClaims)
-	if !ok {
-		log.Println(err)
-		return nil, err
-	}
-
-	return claims, nil
 }

@@ -44,7 +44,7 @@ func (r *UserRepository) ListUsers() ([]*model.User, error) {
 	return us, nil
 }
 
-func (r *UserRepository) FindUserById(id int) (*model.User, error) {
+func (r *UserRepository) FindUserById(id uint) (*model.User, error) {
 	u := &model.User{}
 
 	result := r.db.First(&u, "id = ?", id)
@@ -64,4 +64,14 @@ func (r *UserRepository) FindUserByEmail(email string) (*model.User, error) {
 	}
 
 	return u, nil
+}
+
+func (r *UserRepository) UpdateUserPassword(u *model.User) error {
+
+	result := r.db.Model(&u).Where("id = ?", u.ID).Update("password", u.Password)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

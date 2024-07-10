@@ -29,21 +29,12 @@ var (
 	ErrUserPasswordFormatSpecialCharacter = errors.New("the password must have at least one special character")
 )
 
-func (u *User) Validate() error {
-	if len(u.Name) == 0 {
-		return ErrUserNameRequired
-	}
-
-	re := regexp.MustCompile(`^([a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+)$`)
-	if !re.MatchString(u.Email) {
-		return ErrUserEmailRequired
-	}
-
+func (u *User) ValidatePassword() error {
 	if len(u.Password) < 6 {
 		return ErrUserPasswordLenght
 	}
 
-	re = regexp.MustCompile(`(.*[a-z])+`)
+	re := regexp.MustCompile(`(.*[a-z])+`)
 	if !re.MatchString(u.Password) {
 		return ErrUserPasswordFormatLowCase
 	}
@@ -61,6 +52,39 @@ func (u *User) Validate() error {
 	re = regexp.MustCompile(`(.*[-._!"\x60´'#%&,:;<>=@{}~\$\(\)\*\+\/\\\?\[\]\^\|])+`)
 	if !re.MatchString(u.Password) {
 		return ErrUserPasswordFormatSpecialCharacter
+	}
+
+	return nil
+}
+
+func (u *User) ValidateName() error {
+	if len(u.Name) == 0 {
+		return ErrUserNameRequired
+	}
+
+	return nil
+}
+
+func (u *User) ValidateEmail() error {
+	re := regexp.MustCompile(`^([a-zA-Z0-9._-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z]+)+)$`)
+	if !re.MatchString(u.Email) {
+		return ErrUserEmailRequired
+	}
+
+	return nil
+}
+
+func (u *User) ValidateAll() error {
+
+	if err := u.ValidateName(); err != nil {
+		return err
+	}
+
+	if err := u.ValidateEmail(); err != nil {
+		return err
+	}
+	if err := u.ValidatePassword(); err != nil {
+		return err
 	}
 
 	return nil

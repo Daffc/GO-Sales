@@ -27,6 +27,13 @@ definitions:
       password:
         type: string
     type: object
+  usecase.UpdateUserPasswordInputDTO:
+    properties:
+      id:
+        type: integer
+      password:
+        type: string
+    type: object
   usecase.UserOutputDTO:
     properties:
       created_at:
@@ -142,6 +149,35 @@ paths:
           schema:
             type: string
       summary: Recover user by userId.
+      tags:
+      - Users
+  /users/{userId}/password/:
+    post:
+      consumes:
+      - application/json
+      description: Update user password.
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: New user Password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/usecase.UpdateUserPasswordInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update user password.
       tags:
       - Users
 schemes:

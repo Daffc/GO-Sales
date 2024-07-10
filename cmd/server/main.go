@@ -47,6 +47,7 @@ func main() {
 	sm := http.NewServeMux()
 
 	sm.HandleFunc("POST /login", authHandler.Login)
+	sm.HandleFunc("POST /users/{userId}/password", userHandler.UpdateUserPassword)
 	sm.HandleFunc("POST /users", userHandler.CreateUser)
 	sm.HandleFunc("/users", userHandler.ListUsers)
 	sm.HandleFunc("/users/{userId}", userHandler.FindUserById)
@@ -56,6 +57,6 @@ func main() {
 	log.Printf("Linstening on %s ...\n", config.Server.Port)
 	err = http.ListenAndServe(":"+config.Server.Port, sm)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 }

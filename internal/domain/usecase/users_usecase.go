@@ -13,16 +13,22 @@ type CreateUserInputDTO struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
 type FindUserInputDTO struct {
-	ID int
+	ID uint
 }
 
 type UserOutputDTO struct {
-	ID        int       `json:"id"`
+	ID        uint      `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type UpdateUserPasswordInputDTO struct {
+	ID       uint   `json:"id"`
+	Password string `json:"password"`
 }
 
 type UsersUseCase struct {
@@ -39,7 +45,7 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 		Password: input.Password,
 	}
 
-	err := u.Validate()
+	err := u.ValidateAll()
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +63,7 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 	}
 
 	userDTO := UserOutputDTO{
-		ID:        int(user.ID),
+		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
@@ -77,7 +83,7 @@ func (uc UsersUseCase) ListUsers() ([]*UserOutputDTO, error) {
 
 	for i, u := range us {
 		usersDTO[i] = &UserOutputDTO{
-			ID:        int(u.ID),
+			ID:        u.ID,
 			Name:      u.Name,
 			Email:     u.Email,
 			CreatedAt: u.CreatedAt,
@@ -95,7 +101,7 @@ func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, err
 	}
 
 	userDTO := UserOutputDTO{
-		ID:        int(user.ID),
+		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
@@ -103,4 +109,31 @@ func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, err
 	}
 
 	return &userDTO, nil
+}
+
+func (uc UsersUseCase) UpdateUserPassword(input UpdateUserPasswordInputDTO) error {
+
+	u := &model.User{
+		ID:       uint(input.ID),
+		Password: input.Password,
+	}
+
+	err := u.ValidatePassword()
+	if err != nil {
+		return err
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), 0)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(hashedPassword)
+
+	err = uc.repository.UpdateUserPassword(u)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
