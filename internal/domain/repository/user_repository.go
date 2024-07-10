@@ -48,10 +48,17 @@ func (r *UserRepository) FindUserById(id int) (*model.User, error) {
 	u := &model.User{}
 
 	result := r.db.First(&u, "id = ?", id)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+	if result.Error != nil {
 		return nil, result.Error
 	}
 
+	return u, nil
+}
+
+func (r *UserRepository) FindUserByEmail(email string) (*model.User, error) {
+	u := &model.User{}
+
+	result := r.db.First(&u, "email = ?", email)
 	if result.Error != nil {
 		return nil, result.Error
 	}

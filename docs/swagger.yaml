@@ -1,5 +1,23 @@
 basePath: /
 definitions:
+  usecase.AuthLoginInputDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  usecase.AuthLoginOutputDTO:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      token:
+        type: string
+    type: object
   usecase.CreateUserInputDTO:
     properties:
       email:
@@ -31,6 +49,32 @@ info:
   title: GO Sales API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Logging User.
+      parameters:
+      - description: User credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/usecase.AuthLoginInputDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usecase.AuthLoginOutputDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Logging User.
+      tags:
+      - Auth
   /users:
     get:
       consumes:

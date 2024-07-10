@@ -38,20 +38,18 @@ func main() {
 		panic(err)
 	}
 
-	uersUseCase := usecase.NewUsersUseCase(usersRepository)
+	usersUseCase := usecase.NewUsersUseCase(usersRepository)
+	authUseCase := usecase.NewAuthUseCase(usersRepository)
 
-	userHandler := handler.NewUsersHandler(uersUseCase)
+	userHandler := handler.NewUsersHandler(usersUseCase)
+	authHandler := handler.NewAuthHandler(authUseCase)
 
 	sm := http.NewServeMux()
 
+	sm.HandleFunc("POST /login", authHandler.Login)
 	sm.HandleFunc("POST /users", userHandler.CreateUser)
 	sm.HandleFunc("/users", userHandler.ListUsers)
 	sm.HandleFunc("/users/{userId}", userHandler.FindUserById)
-
-	// Documentation.
-	// sm.HandleFunc("GET /swagger/*", httpSwagger.Handler(
-	// 	httpSwagger.URL(config.Server.Host+":"+config.Server.Port+"/swagger/doc.json"), //The url pointing to API definition
-	// ))
 
 	sm.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
