@@ -14,7 +14,9 @@ type Database struct {
 }
 
 type Server struct {
-	Port string `envconfig:"SERVER_PORT" default:"8080"`
+	Port                 string `envconfig:"SERVER_PORT" default:"8080"`
+	JwtSigningKey        []byte `envconfig:"JWT_SIGNING_KEY" required:"true"`
+	HoursSessionInterval int8   `envconfig:"HOURS_SESSION_INTERVAL" default:"24"`
 }
 type Config struct {
 	Database Database

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	_ "github.com/Daffc/GO-Sales/docs"
@@ -39,7 +39,7 @@ func main() {
 	}
 
 	usersUseCase := usecase.NewUsersUseCase(usersRepository)
-	authUseCase := usecase.NewAuthUseCase(usersRepository)
+	authUseCase := usecase.NewAuthUseCase(usersRepository, config.Server.JwtSigningKey, config.Server.HoursSessionInterval)
 
 	userHandler := handler.NewUsersHandler(usersUseCase)
 	authHandler := handler.NewAuthHandler(authUseCase)
@@ -53,7 +53,7 @@ func main() {
 
 	sm.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
-	fmt.Printf("Linstening on %s ...\n", config.Server.Port)
+	log.Printf("Linstening on %s ...\n", config.Server.Port)
 	err = http.ListenAndServe(":"+config.Server.Port, sm)
 	if err != nil {
 		panic(err)

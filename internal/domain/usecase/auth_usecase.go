@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"time"
 
@@ -25,7 +24,9 @@ type AuthLoginOutputDTO struct {
 }
 
 type AuthUseCase struct {
-	userRepository *repository.UserRepository
+	userRepository       *repository.UserRepository
+	JwtSigningKey        []byte
+	HoursSessionInterval int8
 }
 
 type UserClaims struct {
@@ -35,9 +36,15 @@ type UserClaims struct {
 	jwt.StandardClaims
 }
 
-func NewAuthUseCase(userRepository *repository.UserRepository) *AuthUseCase {
-	return &AuthUseCase{userRepository: userRepository}
+func NewAuthUseCase(userRepository *repository.UserRepository, jwtSigningKey []byte, hoursSessionInterval int8) *AuthUseCase {
+	auc := &AuthUseCase{
+		userRepository:       userRepository,
+		JwtSigningKey:        jwtSigningKey,
+		HoursSessionInterval: hoursSessionInterval,
+	}
+	return auc
 }
+
 func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error) {
 	user, err := ac.userRepository.FindUserByEmail(input.Email)
 	if err != nil {
@@ -60,13 +67,13 @@ func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error
 		Email: user.Email,
 		StandardClaims: jwt.StandardClaims{
 			IssuedAt:  time.Now().Unix(),
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
+			ExpiresAt: time.Now().Add(time.Hour * time.Duration(ac.HoursSessionInterval)).Unix(),
 		},
 	}
 
-	ss, err := NewAccessToken(&userClaims)
+	ss, err := ac.NewAccessToken(&userClaims)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("internal server error")
 	}
 
 	userDTO := AuthLoginOutputDTO{
@@ -79,9 +86,9 @@ func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error
 	return &userDTO, nil
 }
 
-func NewAccessToken(c *UserClaims) (string, error) {
+func (ac AuthUseCase) NewAccessToken(c *UserClaims) (string, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
-	token, err := accessToken.SignedString([]byte("SEGREDO123"))
+	token, err := accessToken.SignedString(ac.JwtSigningKey)
 	if err != nil {
 		return "", err
 	}
@@ -89,22 +96,23 @@ func NewAccessToken(c *UserClaims) (string, error) {
 	return token, nil
 }
 
-func ValidateAccessToken(t string) (*UserClaims, error) {
+func (ac AuthUseCase) ValidateAccessToken(t string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(
 		t,
 		&UserClaims{},
 		func(token *jwt.Token) (interface{}, error) {
-			return []byte("SEGREDO123"), nil
+			return ac.JwtSigningKey, nil
 		})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok {
-		log.Fatal("unknown claims type, cannot proceed")
+		log.Println(err)
+		return nil, err
 	}
 
-	fmt.Println(claims.ID, claims.Email, claims.Name, claims.StandardClaims)
 	return claims, nil
 }
