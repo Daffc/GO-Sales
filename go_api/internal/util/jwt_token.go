@@ -30,7 +30,21 @@ func NewAccessToken(user *domain.User, jwtSigningKey []byte, JwtSessionDuration 
 	return token, nil
 }
 
-func ValidateAccessToken(t string, jwtSigningKey []byte) (*domain.UserClaims, error) {
+func IsAuthorized(requestToken string, jwtSigningKey []byte) (bool, error) {
+	_, err := jwt.Parse(
+		requestToken,
+		func(token *jwt.Token) (interface{}, error) {
+			return jwtSigningKey, nil
+		})
+	if err != nil {
+		log.Println(err)
+		return false, err
+	}
+
+	return true, nil
+}
+
+func RecoverUserFromToken(t string, jwtSigningKey []byte) (*domain.User, error) {
 	token, err := jwt.ParseWithClaims(
 		t,
 		&domain.UserClaims{},
@@ -42,11 +56,17 @@ func ValidateAccessToken(t string, jwtSigningKey []byte) (*domain.UserClaims, er
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(*domain.UserClaims)
+	userClaims, ok := token.Claims.(*domain.UserClaims)
 	if !ok {
 		log.Println(err)
 		return nil, err
 	}
 
-	return claims, nil
+	user := &domain.User{
+		ID:    userClaims.ID,
+		Name:  userClaims.Name,
+		Email: userClaims.Email,
+	}
+
+	return user, nil
 }

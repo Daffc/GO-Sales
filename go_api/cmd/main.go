@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Daffc/GO-Sales/api/handler"
+	"github.com/Daffc/GO-Sales/api/middleware"
 	_ "github.com/Daffc/GO-Sales/docs"
 	"github.com/Daffc/GO-Sales/internal/config"
 	"github.com/Daffc/GO-Sales/internal/database/mariadb"
@@ -47,10 +48,10 @@ func main() {
 	sm := http.NewServeMux()
 
 	sm.HandleFunc("POST /login", authHandler.Login)
-	sm.HandleFunc("POST /users/{userId}/password", userHandler.UpdateUserPassword)
 	sm.HandleFunc("POST /users", userHandler.CreateUser)
 	sm.HandleFunc("/users", userHandler.ListUsers)
 	sm.HandleFunc("/users/{userId}", userHandler.FindUserById)
+	sm.Handle("POST /users/{userId}/password", middleware.NewJwtAuthenticator(userHandler.UpdateUserPassword, config.Server.JwtSigningKey))
 
 	sm.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 

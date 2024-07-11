@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Daffc/GO-Sales/domain"
 	"github.com/Daffc/GO-Sales/domain/dto"
 	"github.com/Daffc/GO-Sales/usecase"
 )
@@ -105,7 +106,7 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 // @Success		200
 // @Failure		500		{object}	string
 // @Router		/users/{userId}/password	[post]
-func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
+func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request, authUser *domain.User) {
 
 	var input dto.UpdateUserPasswordInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -116,6 +117,11 @@ func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Reques
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if uint(userId) != authUser.ID {
+		http.Error(w, "forbidden", http.StatusForbidden)
 		return
 	}
 
