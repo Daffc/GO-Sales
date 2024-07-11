@@ -23,6 +23,3 @@ go.work.sum
 
 # Environment variables file
 .env
-
-# Database volume data
-db_data

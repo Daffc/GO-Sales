@@ -163,7 +163,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{userId}/password/": {
+        "/users/{userId}/password": {
             "post": {
                 "description": "Update user password.",
                 "consumes": [

@@ -151,7 +151,7 @@ paths:
       summary: Recover user by userId.
       tags:
       - Users
-  /users/{userId}/password/:
+  /users/{userId}/password:
     post:
       consumes:
       - application/json

@@ -103,7 +103,7 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 // @Param		input	body	usecase.UpdateUserPasswordInputDTO	true	"New user Password"
 // @Success		200
 // @Failure		500		{object}	string
-// @Router		/users/{userId}/password/	[post]
+// @Router		/users/{userId}/password	[post]
 func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request) {
 
 	var input usecase.UpdateUserPasswordInputDTO

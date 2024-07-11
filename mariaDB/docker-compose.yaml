@@ -1,0 +1,15 @@
+volumes:
+  db_data: {}
+
+services:
+  db:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_USER: mysql
+      MARIADB_PASSWORD: mysql
+      MARIADB_DATABASE: sales-app
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db_data:/var/lib/mysql

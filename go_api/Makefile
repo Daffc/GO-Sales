@@ -2,7 +2,7 @@
 
 # Project folders
 SWAGGER_DIR = ./docs
-CMD_DIR = ./cmd/server
+CMD_DIR = ./cmd
 HANDLER_DIR = ./internal/handler/
 USECAS_DIR = ./internal/domain/usecase/
 
