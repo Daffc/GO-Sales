@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/Daffc/GO-Sales/domain/dto"
 	"github.com/Daffc/GO-Sales/repository"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -76,7 +77,7 @@ func (ac AuthUseCase) ValidateAccessToken(t string) (*UserClaims, error) {
 	return claims, nil
 }
 
-func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error) {
+func (ac AuthUseCase) Login(input *dto.LoginInputDTO) (*dto.LoginOutputDTO, error) {
 	user, err := ac.userRepository.FindUserByEmail(input.Email)
 	if err != nil {
 		switch {
@@ -107,12 +108,12 @@ func (ac AuthUseCase) Login(input AuthLoginInputDTO) (*AuthLoginOutputDTO, error
 		return nil, errors.New("internal server error")
 	}
 
-	userDTO := AuthLoginOutputDTO{
-		ID:    int(user.ID),
+	loginOutputDTO := dto.LoginOutputDTO{
+		ID:    user.ID,
 		Name:  user.Name,
 		Email: user.Email,
 		Token: ss,
 	}
 
-	return &userDTO, nil
+	return &loginOutputDTO, nil
 }

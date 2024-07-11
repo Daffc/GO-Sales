@@ -3,8 +3,8 @@
 # Project folders
 SWAGGER_DIR = ./docs
 CMD_DIR = ./cmd
-HANDLER_DIR = ./internal/handler/
-USECAS_DIR = ./internal/domain/usecase/
+HANDLER_DIR = ./api/handler/
+DTO_DIR = ./domain/dto
 
 # Output program name
 BINARY_NAME = server
@@ -13,7 +13,7 @@ all: swag build
 
 # Generate API documentation with
 swag:
-	swag init --output docs --dir $(CMD_DIR),$(HANDLER_DIR),$(USECAS_DIR)
+	swag init --output docs --dir $(CMD_DIR),$(HANDLER_DIR),$(DTO_DIR)
 
 # Compiles project
 build:

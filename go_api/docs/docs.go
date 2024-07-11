@@ -38,7 +38,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/usecase.AuthLoginInputDTO"
+                            "$ref": "#/definitions/dto.LoginInputDTO"
                         }
                     }
                 ],
@@ -46,7 +46,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/usecase.AuthLoginOutputDTO"
+                            "$ref": "#/definitions/dto.LoginOutputDTO"
                         }
                     },
                     "500": {
@@ -77,7 +77,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/usecase.UserOutputDTO"
+                                "$ref": "#/definitions/dto.UserOutputDTO"
                             }
                         }
                     },
@@ -108,7 +108,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/usecase.CreateUserInputDTO"
+                            "$ref": "#/definitions/dto.UserInputDTO"
                         }
                     }
                 ],
@@ -151,7 +151,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/usecase.UserOutputDTO"
+                            "$ref": "#/definitions/dto.UserOutputDTO"
                         }
                     },
                     "500": {
@@ -190,7 +190,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/usecase.UpdateUserPasswordInputDTO"
+                            "$ref": "#/definitions/dto.UpdateUserPasswordInputDTO"
                         }
                     }
                 ],
@@ -209,7 +209,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "usecase.AuthLoginInputDTO": {
+        "dto.LoginInputDTO": {
             "type": "object",
             "properties": {
                 "email": {
@@ -220,9 +220,12 @@ const docTemplate = `{
                 }
             }
         },
-        "usecase.AuthLoginOutputDTO": {
+        "dto.LoginOutputDTO": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -234,24 +237,13 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
-                }
-            }
-        },
-        "usecase.CreateUserInputDTO": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
+                "updated_at": {
                     "type": "string"
                 }
             }
         },
-        "usecase.UpdateUserPasswordInputDTO": {
+        "dto.UpdateUserPasswordInputDTO": {
             "type": "object",
             "properties": {
                 "id": {
@@ -262,7 +254,24 @@ const docTemplate = `{
                 }
             }
         },
-        "usecase.UserOutputDTO": {
+        "dto.UserInputDTO": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UserOutputDTO": {
             "type": "object",
             "properties": {
                 "created_at": {

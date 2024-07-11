@@ -1,35 +1,11 @@
 package usecase
 
 import (
-	"time"
-
 	"github.com/Daffc/GO-Sales/domain"
+	"github.com/Daffc/GO-Sales/domain/dto"
 	"github.com/Daffc/GO-Sales/repository"
 	"golang.org/x/crypto/bcrypt"
 )
-
-type CreateUserInputDTO struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type FindUserInputDTO struct {
-	ID uint
-}
-
-type UserOutputDTO struct {
-	ID        uint      `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-type UpdateUserPasswordInputDTO struct {
-	ID       uint   `json:"id"`
-	Password string `json:"password"`
-}
 
 type UsersUseCase struct {
 	repository *repository.UserRepository
@@ -38,7 +14,7 @@ type UsersUseCase struct {
 func NewUsersUseCase(repository *repository.UserRepository) *UsersUseCase {
 	return &UsersUseCase{repository: repository}
 }
-func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, error) {
+func (uc UsersUseCase) CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
 	u := domain.User{
 		Name:     input.Name,
 		Email:    input.Email,
@@ -62,7 +38,7 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 		return nil, err
 	}
 
-	userDTO := UserOutputDTO{
+	userDTO := dto.UserOutputDTO{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
@@ -73,16 +49,16 @@ func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, err
 	return &userDTO, nil
 }
 
-func (uc UsersUseCase) ListUsers() ([]*UserOutputDTO, error) {
+func (uc UsersUseCase) ListUsers() ([]*dto.UserOutputDTO, error) {
 	us, err := uc.repository.ListUsers()
 	if err != nil {
 		return nil, err
 	}
 
-	usersDTO := make([]*UserOutputDTO, len(us))
+	usersDTO := make([]*dto.UserOutputDTO, len(us))
 
 	for i, u := range us {
-		usersDTO[i] = &UserOutputDTO{
+		usersDTO[i] = &dto.UserOutputDTO{
 			ID:        u.ID,
 			Name:      u.Name,
 			Email:     u.Email,
@@ -94,13 +70,13 @@ func (uc UsersUseCase) ListUsers() ([]*UserOutputDTO, error) {
 	return usersDTO, nil
 }
 
-func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, error) {
+func (uc UsersUseCase) FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
 	user, err := uc.repository.FindUserById(input.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	userDTO := UserOutputDTO{
+	userDTO := dto.UserOutputDTO{
 		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
@@ -111,7 +87,7 @@ func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, err
 	return &userDTO, nil
 }
 
-func (uc UsersUseCase) UpdateUserPassword(input UpdateUserPasswordInputDTO) error {
+func (uc UsersUseCase) UpdateUserPassword(input dto.UpdateUserPasswordInputDTO) error {
 
 	u := &domain.User{
 		ID:       uint(input.ID),
