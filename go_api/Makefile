@@ -9,7 +9,7 @@ DTO_DIR = ./domain/dto
 # Output program name
 BINARY_NAME = server
 
-all: swag build
+all: swag build migrate
 
 # Generate API documentation with
 swag:
