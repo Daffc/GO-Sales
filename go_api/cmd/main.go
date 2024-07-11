@@ -39,7 +39,7 @@ func main() {
 	}
 
 	usersUseCase := usecase.NewUsersUseCase(usersRepository)
-	authUseCase := usecase.NewAuthUseCase(usersRepository, config.Server.JwtSigningKey, config.Server.HoursSessionInterval)
+	authUseCase := usecase.NewAuthUseCase(usersRepository, config.Server.JwtSigningKey, config.Server.JwtSessionDuration)
 
 	userHandler := handler.NewUsersHandler(usersUseCase)
 	authHandler := handler.NewAuthHandler(authUseCase)

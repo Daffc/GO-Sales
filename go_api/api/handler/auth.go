@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/Daffc/GO-Sales/domain/dto"
@@ -29,6 +30,7 @@ func NewAuthHandler(authUseCase *usecase.AuthUseCase) *AuthHandler {
 func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var input dto.LoginInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

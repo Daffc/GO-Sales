@@ -1,6 +1,8 @@
 package config
 
 import (
+	"log"
+
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -14,9 +16,9 @@ type Database struct {
 }
 
 type Server struct {
-	Port                 string `envconfig:"SERVER_PORT" default:"8080"`
-	JwtSigningKey        []byte `envconfig:"JWT_SIGNING_KEY" required:"true"`
-	HoursSessionInterval int8   `envconfig:"HOURS_SESSION_INTERVAL" default:"24"`
+	Port               string `envconfig:"SERVER_PORT" default:"8080"`
+	JwtSigningKey      []byte `envconfig:"JWT_SIGNING_KEY" required:"true"`
+	JwtSessionDuration uint   `envconfig:"JWT_SESSION_DURATION" default:"24"`
 }
 type Config struct {
 	Database Database
@@ -27,5 +29,9 @@ func NewConfigParser() (*Config, error) {
 	_ = godotenv.Load()
 	cnf := Config{}
 	err := envconfig.Process("", &cnf)
-	return &cnf, err
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return &cnf, nil
 }
