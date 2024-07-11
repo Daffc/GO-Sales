@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Daffc/GO-Sales/internal/domain/usecase"
+	"github.com/Daffc/GO-Sales/usecase"
 )
 
 type UsersHandler struct {

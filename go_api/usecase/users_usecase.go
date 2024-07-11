@@ -3,8 +3,8 @@ package usecase
 import (
 	"time"
 
-	"github.com/Daffc/GO-Sales/internal/domain/model"
-	"github.com/Daffc/GO-Sales/internal/domain/repository"
+	"github.com/Daffc/GO-Sales/domain"
+	"github.com/Daffc/GO-Sales/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -39,7 +39,7 @@ func NewUsersUseCase(repository *repository.UserRepository) *UsersUseCase {
 	return &UsersUseCase{repository: repository}
 }
 func (uc UsersUseCase) CreateUser(input CreateUserInputDTO) (*UserOutputDTO, error) {
-	u := model.User{
+	u := domain.User{
 		Name:     input.Name,
 		Email:    input.Email,
 		Password: input.Password,
@@ -113,7 +113,7 @@ func (uc UsersUseCase) FindUserById(input FindUserInputDTO) (*UserOutputDTO, err
 
 func (uc UsersUseCase) UpdateUserPassword(input UpdateUserPasswordInputDTO) error {
 
-	u := &model.User{
+	u := &domain.User{
 		ID:       uint(input.ID),
 		Password: input.Password,
 	}

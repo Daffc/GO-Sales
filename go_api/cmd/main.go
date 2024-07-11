@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Daffc/GO-Sales/api/handler"
 	_ "github.com/Daffc/GO-Sales/docs"
 	"github.com/Daffc/GO-Sales/internal/config"
 	"github.com/Daffc/GO-Sales/internal/database/mariadb"
-	"github.com/Daffc/GO-Sales/internal/domain/repository"
-	"github.com/Daffc/GO-Sales/internal/domain/usecase"
-	"github.com/Daffc/GO-Sales/internal/handler"
+	"github.com/Daffc/GO-Sales/repository"
+	"github.com/Daffc/GO-Sales/usecase"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 

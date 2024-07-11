@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Daffc/GO-Sales/internal/domain/usecase"
+	"github.com/Daffc/GO-Sales/usecase"
 )
 
 type AuthHandler struct {

@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Daffc/GO-Sales/internal/domain/repository"
+	"github.com/Daffc/GO-Sales/repository"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
