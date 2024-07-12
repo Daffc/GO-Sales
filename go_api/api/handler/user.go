@@ -2,11 +2,13 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/Daffc/GO-Sales/domain"
 	"github.com/Daffc/GO-Sales/domain/dto"
+	"github.com/Daffc/GO-Sales/internal/util"
 	"github.com/Daffc/GO-Sales/usecase"
 )
 
@@ -31,18 +33,19 @@ func NewUsersHandler(usersUseCase *usecase.UsersUseCase) *UsersHandler {
 func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var input dto.UserInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	output, err := uh.UsersUseCase.CreateUser(input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(output)
+	util.JSONResponse(w, output, http.StatusOK)
 }
 
 // ListUsers 	List all non deleted users.
@@ -58,12 +61,12 @@ func (uh *UsersHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 	output, err := uh.UsersUseCase.ListUsers()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(output)
+	util.JSONResponse(w, output, http.StatusOK)
 }
 
 // FindUserById Recover user by userId.
@@ -79,7 +82,8 @@ func (uh *UsersHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -87,12 +91,12 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 
 	output, err := uh.UsersUseCase.FindUserById(input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(output)
+	util.JSONResponse(w, output, http.StatusOK)
 }
 
 // UpdateUserPassword Update user password.
@@ -110,25 +114,31 @@ func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Reques
 
 	var input dto.UpdateUserPasswordInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if uint(userId) != authUser.ID {
-		http.Error(w, "forbidden", http.StatusForbidden)
+		log.Println(err)
+		util.JSONResponse(w, "forbidden", http.StatusForbidden)
 		return
 	}
 
 	input.ID = uint(userId)
 	err = uh.UsersUseCase.UpdateUserPassword(input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	util.JSONResponse(w, "successs", http.StatusOK)
 }

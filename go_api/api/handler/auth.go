@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Daffc/GO-Sales/domain/dto"
+	"github.com/Daffc/GO-Sales/internal/util"
 	"github.com/Daffc/GO-Sales/usecase"
 )
 
@@ -31,16 +32,16 @@ func (ah *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var input dto.LoginInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	output, err := ah.AuthUseCase.Login(&input)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Println(err)
+		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(output)
+	util.JSONResponse(w, output, http.StatusOK)
 }

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"log"
 	"time"
 
 	"github.com/Daffc/GO-Sales/domain"
@@ -23,7 +22,6 @@ func NewAccessToken(user *domain.User, jwtSigningKey []byte, JwtSessionDuration 
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := accessToken.SignedString(jwtSigningKey)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 
@@ -37,7 +35,6 @@ func IsAuthorized(requestToken string, jwtSigningKey []byte) (bool, error) {
 			return jwtSigningKey, nil
 		})
 	if err != nil {
-		log.Println(err)
 		return false, err
 	}
 
@@ -52,13 +49,11 @@ func RecoverUserFromToken(t string, jwtSigningKey []byte) (*domain.User, error) 
 			return jwtSigningKey, nil
 		})
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 
 	userClaims, ok := token.Claims.(*domain.UserClaims)
 	if !ok {
-		log.Println(err)
 		return nil, err
 	}
 
