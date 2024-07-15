@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"github.com/Daffc/GO-Sales/api/handler"
 	"github.com/Daffc/GO-Sales/api/middleware"
@@ -55,9 +59,32 @@ func main() {
 
 	sm.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
-	log.Printf("Linstening on %s ...\n", config.Server.Port)
-	err = http.ListenAndServe(":"+config.Server.Port, sm)
-	if err != nil {
-		log.Println(err)
+	srv := &http.Server{
+		Addr:         config.Server.Port,
+		WriteTimeout: time.Second * time.Duration(config.Server.WriteTimeout),
+		ReadTimeout:  time.Second * time.Duration(config.Server.ReadTimeout),
+		IdleTimeout:  time.Second * time.Duration(config.Server.IdleTimeout),
+		Handler:      sm,
 	}
+
+	go func() {
+		if err = srv.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	log.Printf("Linstening on %s ...\n", config.Server.Port)
+
+	// Graceful Shutdown
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	<-c
+
+	shutdownTimeout := time.Duration(2) * time.Nanosecond
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	srv.Shutdown(ctx)
+	log.Printf("shutting down server.")
+	os.Exit(0)
 }
