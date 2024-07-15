@@ -1,4 +1,4 @@
-.PHONY: all clean swag
+.PHONY: all clean swag build migrate
 
 # Project folders
 SWAGGER_DIR = ./docs
