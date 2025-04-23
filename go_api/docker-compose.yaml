@@ -7,4 +7,10 @@ services:
     volumes:
       - .:/home/gouser/app
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: restart
+          path: .
+          target: /home/gouser/app
