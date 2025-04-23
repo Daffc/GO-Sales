@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    command: bash -c "make all; ./server"
     ports:
       - 8080:8080
     volumes:
