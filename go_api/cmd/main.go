@@ -33,12 +33,17 @@ func main() {
 		panic(err)
 	}
 
-	mariadb, err := mariadb.NewDatabaseConnection(config)
+	db, err := mariadb.NewDatabaseConnection(&config.Database)
 	if err != nil {
 		panic(err)
 	}
 
-	usersRepository, err := repository.NewMysqlUserRepository(mariadb)
+	err = mariadb.RunMigrations(db, config.Database.MigrationsFolderPath)
+	if err != nil {
+		panic(err)
+	}
+
+	usersRepository, err := repository.NewMysqlUserRepository(db)
 	if err != nil {
 		panic(err)
 	}

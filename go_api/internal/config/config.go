@@ -8,11 +8,12 @@ import (
 )
 
 type Database struct {
-	Name     string `envconfig:"DB_NAME" required:"true"`
-	Host     string `envconfig:"DB_HOST" required:"true"`
-	Port     string `envconfig:"DB_PORT" required:"true"`
-	User     string `envconfig:"DB_USERNAME" required:"true"`
-	Password string `envconfig:"DB_PASSWORD" required:"true"`
+	Name                 string `envconfig:"DB_NAME" required:"true"`
+	Host                 string `envconfig:"DB_HOST" required:"true"`
+	Port                 string `envconfig:"DB_PORT" required:"true"`
+	User                 string `envconfig:"DB_USERNAME" required:"true"`
+	Password             string `envconfig:"DB_PASSWORD" required:"true"`
+	MigrationsFolderPath string `envconfig:"DB_MIRGATION_FOLDER" required:"true"`
 }
 
 type Server struct {

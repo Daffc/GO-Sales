@@ -1,4 +1,4 @@
-.PHONY: all clean swag build migrate
+.PHONY: all clean swag build
 
 # Project folders
 SWAGGER_DIR = ./docs
@@ -9,7 +9,7 @@ DTO_DIR = ./domain/dto
 # Output program name
 BINARY_NAME = server
 
-all: swag build migrate
+all: swag build
 
 # Generate API documentation with
 swag:
@@ -18,10 +18,6 @@ swag:
 # Compiles project
 build:
 	go build -o $(BINARY_NAME) $(CMD_DIR)/main.go
-
-# Migrate Database
-migrate:
-	cd scripts; ./goose.sh up;
 
 clean:
 	rm -rf $(SWAGGER_DIR)
