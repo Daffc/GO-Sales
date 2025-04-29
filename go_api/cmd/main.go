@@ -28,7 +28,7 @@ import (
 // @host			localhost:8080
 func main() {
 
-	config, err := config.NewConfigParser()
+	config, err := config.NewConfigParser(".env")
 	if err != nil {
 		panic(err)
 	}

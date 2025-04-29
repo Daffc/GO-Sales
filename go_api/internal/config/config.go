@@ -29,8 +29,8 @@ type Config struct {
 	Server   Server
 }
 
-func NewConfigParser() (*Config, error) {
-	_ = godotenv.Load()
+func NewConfigParser(envFilePath string) (*Config, error) {
+	_ = godotenv.Load(envFilePath)
 	cnf := Config{}
 	err := envconfig.Process("", &cnf)
 	if err != nil {
