@@ -1,0 +1,4 @@
+CREATE DATABASE IF NOT EXISTS test;
+CREATE DATABASE IF NOT EXISTS `sales-app`;
+GRANT ALL PRIVILEGES ON test.* TO 'mysql'@'%';
+GRANT ALL PRIVILEGES ON `sales-app`.* TO 'mysql'@'%';
