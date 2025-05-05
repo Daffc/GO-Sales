@@ -10,14 +10,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type AuthUseCase struct {
-	userRepository     *repository.UserRepository
+type AuthUseCase interface {
+	Login(input *dto.LoginInputDTO) (*dto.LoginOutputDTO, error)
+}
+
+type authUseCase struct {
+	userRepository     repository.UserRepository
 	JwtSigningKey      []byte
 	JwtSessionDuration uint
 }
 
-func NewAuthUseCase(userRepository *repository.UserRepository, jwtSigningKey []byte, jwtSessionDuration uint) *AuthUseCase {
-	auc := &AuthUseCase{
+func NewAuthUseCase(userRepository repository.UserRepository, jwtSigningKey []byte, jwtSessionDuration uint) AuthUseCase {
+	auc := &authUseCase{
 		userRepository:     userRepository,
 		JwtSigningKey:      jwtSigningKey,
 		JwtSessionDuration: jwtSessionDuration,
@@ -25,7 +29,7 @@ func NewAuthUseCase(userRepository *repository.UserRepository, jwtSigningKey []b
 	return auc
 }
 
-func (ac AuthUseCase) Login(input *dto.LoginInputDTO) (*dto.LoginOutputDTO, error) {
+func (ac *authUseCase) Login(input *dto.LoginInputDTO) (*dto.LoginOutputDTO, error) {
 	user, err := ac.userRepository.FindUserByEmail(input.Email)
 	if err != nil {
 		switch {

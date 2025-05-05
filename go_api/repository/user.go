@@ -8,15 +8,23 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserRepository struct {
+type UserRepository interface {
+	CreateUser(u *domain.User) (*domain.User, error)
+	ListUsers() ([]*domain.User, error)
+	FindUserById(id uint) (*domain.User, error)
+	FindUserByEmail(email string) (*domain.User, error)
+	UpdateUserPassword(u *domain.User) error
+}
+
+type userRepository struct {
 	db *gorm.DB
 }
 
-func NewMysqlUserRepository(db *gorm.DB) (*UserRepository, error) {
-	return &UserRepository{db: db}, nil
+func NewMysqlUserRepository(db *gorm.DB) (UserRepository, error) {
+	return &userRepository{db: db}, nil
 }
 
-func (r *UserRepository) CreateUser(u *domain.User) (*domain.User, error) {
+func (r *userRepository) CreateUser(u *domain.User) (*domain.User, error) {
 
 	u.CreatedAt = time.Now()
 	u.UpdatedAt = time.Now()
@@ -29,7 +37,7 @@ func (r *UserRepository) CreateUser(u *domain.User) (*domain.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) ListUsers() ([]*domain.User, error) {
+func (r *userRepository) ListUsers() ([]*domain.User, error) {
 	us := []*domain.User{}
 
 	result := r.db.Find(&us)
@@ -44,7 +52,7 @@ func (r *UserRepository) ListUsers() ([]*domain.User, error) {
 	return us, nil
 }
 
-func (r *UserRepository) FindUserById(id uint) (*domain.User, error) {
+func (r *userRepository) FindUserById(id uint) (*domain.User, error) {
 	u := &domain.User{}
 
 	result := r.db.First(&u, "id = ?", id)
@@ -55,7 +63,7 @@ func (r *UserRepository) FindUserById(id uint) (*domain.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) FindUserByEmail(email string) (*domain.User, error) {
+func (r *userRepository) FindUserByEmail(email string) (*domain.User, error) {
 	u := &domain.User{}
 
 	result := r.db.First(&u, "email = ?", email)
@@ -66,7 +74,7 @@ func (r *UserRepository) FindUserByEmail(email string) (*domain.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) UpdateUserPassword(u *domain.User) error {
+func (r *userRepository) UpdateUserPassword(u *domain.User) error {
 
 	result := r.db.Model(&u).Where("id = ?", u.ID).Update("password", u.Password)
 	if result.Error != nil {
