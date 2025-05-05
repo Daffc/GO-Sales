@@ -43,15 +43,15 @@ func main() {
 		panic(err)
 	}
 
-	usersRepository, err := repository.NewMysqlUserRepository(db)
+	userRepository, err := repository.NewMysqlUserRepository(db)
 	if err != nil {
 		panic(err)
 	}
 
-	usersUseCase := usecase.NewUsersUseCase(usersRepository)
-	authUseCase := usecase.NewAuthUseCase(usersRepository, config.Server.JwtSigningKey, config.Server.JwtSessionDuration)
+	userUseCase := usecase.NewUserUseCase(userRepository)
+	authUseCase := usecase.NewAuthUseCase(userRepository, config.Server.JwtSigningKey, config.Server.JwtSessionDuration)
 
-	userHandler := handler.NewUsersHandler(usersUseCase)
+	userHandler := handler.NewUserHandler(userUseCase)
 	authHandler := handler.NewAuthHandler(authUseCase)
 
 	sm := http.NewServeMux()

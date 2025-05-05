@@ -12,12 +12,12 @@ import (
 	"github.com/Daffc/GO-Sales/usecase"
 )
 
-type UsersHandler struct {
-	UsersUseCase *usecase.UsersUseCase
+type UserHandler struct {
+	UserUseCase *usecase.UserUseCase
 }
 
-func NewUsersHandler(usersUseCase *usecase.UsersUseCase) *UsersHandler {
-	return &UsersHandler{UsersUseCase: usersUseCase}
+func NewUserHandler(userUseCase *usecase.UserUseCase) *UserHandler {
+	return &UserHandler{UserUseCase: userUseCase}
 }
 
 // CreateUser 	Create a new user.
@@ -30,7 +30,7 @@ func NewUsersHandler(usersUseCase *usecase.UsersUseCase) *UsersHandler {
 // @Success		200
 // @Failure		500	{object}	string
 // @Router		/users [post]
-func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var input dto.UserInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		log.Println(err)
@@ -38,7 +38,7 @@ func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := uh.UsersUseCase.CreateUser(input)
+	output, err := uh.UserUseCase.CreateUser(input)
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
@@ -57,9 +57,9 @@ func (uh *UsersHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Success		200	{object}	[]dto.UserOutputDTO
 // @Failure		500	{object}	string
 // @Router		/users [get]
-func (uh *UsersHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 
-	output, err := uh.UsersUseCase.ListUsers()
+	output, err := uh.UserUseCase.ListUsers()
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
@@ -79,7 +79,7 @@ func (uh *UsersHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 // @Success		200		{object}	dto.UserOutputDTO
 // @Failure		500		{object}	string
 // @Router		/users/{userId} [get]
-func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
+func (uh *UserHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.Atoi(r.PathValue("userId"))
 	if err != nil {
 		log.Println(err)
@@ -89,7 +89,7 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 
 	input := dto.UserInputDTO{ID: uint(userId)}
 
-	output, err := uh.UsersUseCase.FindUserById(input)
+	output, err := uh.UserUseCase.FindUserById(input)
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
@@ -110,7 +110,7 @@ func (uh *UsersHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 // @Success		200
 // @Failure		500		{object}	string
 // @Router		/users/{userId}/password	[post]
-func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request, authUser *domain.User) {
+func (uh *UserHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request, authUser *domain.User) {
 
 	var input dto.UpdateUserPasswordInputDTO
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -133,7 +133,7 @@ func (uh *UsersHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Reques
 	}
 
 	input.ID = uint(userId)
-	err = uh.UsersUseCase.UpdateUserPassword(input)
+	err = uh.UserUseCase.UpdateUserPassword(input)
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)

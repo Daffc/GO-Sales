@@ -7,14 +7,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UsersUseCase struct {
+type UserUseCase struct {
 	repository *repository.UserRepository
 }
 
-func NewUsersUseCase(repository *repository.UserRepository) *UsersUseCase {
-	return &UsersUseCase{repository: repository}
+func NewUserUseCase(repository *repository.UserRepository) *UserUseCase {
+	return &UserUseCase{repository: repository}
 }
-func (uc UsersUseCase) CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
+func (uc UserUseCase) CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
 	u := domain.User{
 		Name:     input.Name,
 		Email:    input.Email,
@@ -49,7 +49,7 @@ func (uc UsersUseCase) CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, e
 	return &userDTO, nil
 }
 
-func (uc UsersUseCase) ListUsers() ([]*dto.UserOutputDTO, error) {
+func (uc UserUseCase) ListUsers() ([]*dto.UserOutputDTO, error) {
 	us, err := uc.repository.ListUsers()
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (uc UsersUseCase) ListUsers() ([]*dto.UserOutputDTO, error) {
 	return usersDTO, nil
 }
 
-func (uc UsersUseCase) FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
+func (uc UserUseCase) FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
 	user, err := uc.repository.FindUserById(input.ID)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (uc UsersUseCase) FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO,
 	return &userDTO, nil
 }
 
-func (uc UsersUseCase) UpdateUserPassword(input dto.UpdateUserPasswordInputDTO) error {
+func (uc UserUseCase) UpdateUserPassword(input dto.UpdateUserPasswordInputDTO) error {
 
 	u := &domain.User{
 		ID:       uint(input.ID),
