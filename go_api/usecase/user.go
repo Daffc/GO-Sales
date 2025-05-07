@@ -8,9 +8,9 @@ import (
 )
 
 type UserUseCase interface {
-	CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, error)
+	CreateUser(input *dto.UserInputDTO) (*dto.UserOutputDTO, error)
 	ListUsers() ([]*dto.UserOutputDTO, error)
-	FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO, error)
+	FindUserById(input uint) (*dto.UserOutputDTO, error)
 	UpdateUserPassword(input dto.UpdateUserPasswordInputDTO) error
 }
 type userUseCase struct {
@@ -21,7 +21,7 @@ func NewUserUseCase(repository repository.UserRepository) UserUseCase {
 	return &userUseCase{repository: repository}
 }
 
-func (uc *userUseCase) CreateUser(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
+func (uc *userUseCase) CreateUser(input *dto.UserInputDTO) (*dto.UserOutputDTO, error) {
 	u := domain.User{
 		Name:     input.Name,
 		Email:    input.Email,
@@ -77,8 +77,8 @@ func (uc *userUseCase) ListUsers() ([]*dto.UserOutputDTO, error) {
 	return usersDTO, nil
 }
 
-func (uc *userUseCase) FindUserById(input dto.UserInputDTO) (*dto.UserOutputDTO, error) {
-	user, err := uc.repository.FindUserById(input.ID)
+func (uc *userUseCase) FindUserById(input uint) (*dto.UserOutputDTO, error) {
+	user, err := uc.repository.FindUserById(input)
 	if err != nil {
 		return nil, err
 	}

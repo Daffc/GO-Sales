@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
-	"github.com/Daffc/GO-Sales/domain"
 	"github.com/Daffc/GO-Sales/domain/dto"
 	"github.com/Daffc/GO-Sales/internal/util"
 	"github.com/Daffc/GO-Sales/usecase"
@@ -38,7 +38,7 @@ func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := uh.UserUseCase.CreateUser(input)
+	output, err := uh.UserUseCase.CreateUser(&input)
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
@@ -80,16 +80,21 @@ func (uh *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 // @Failure		500		{object}	string
 // @Router		/users/{userId} [get]
 func (uh *UserHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
-	userId, err := strconv.Atoi(r.PathValue("userId"))
-	if err != nil {
-		log.Println(err)
-		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
+	// Extract userId directly from the URL path
+	pathParts := strings.Split(strings.Trim(r.URL.Path, "/"), "/")
+	if len(pathParts) < 2 {
+		util.JSONResponse(w, "Invalid URL path", http.StatusBadRequest)
 		return
 	}
 
-	input := dto.UserInputDTO{ID: uint(userId)}
+	userId, err := strconv.ParseUint(pathParts[len(pathParts)-1], 10, 32)
+	if err != nil {
+		log.Println(err)
+		util.JSONResponse(w, "Invalid user id", http.StatusBadRequest)
+		return
+	}
 
-	output, err := uh.UserUseCase.FindUserById(input)
+	output, err := uh.UserUseCase.FindUserById(uint(userId))
 	if err != nil {
 		log.Println(err)
 		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
@@ -97,48 +102,4 @@ func (uh *UserHandler) FindUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	util.JSONResponse(w, output, http.StatusOK)
-}
-
-// UpdateUserPassword Update user password.
-// @Summary		Update user password.
-// @Description	Update user password.
-// @Tags		Users
-// @Accept		json
-// @Produce		json
-// @Param		userId	path	int	true	"User ID"
-// @Param		input	body	dto.UpdateUserPasswordInputDTO	true	"New user Password"
-// @Success		200
-// @Failure		500		{object}	string
-// @Router		/users/{userId}/password	[post]
-func (uh *UserHandler) UpdateUserPassword(w http.ResponseWriter, r *http.Request, authUser *domain.User) {
-
-	var input dto.UpdateUserPasswordInputDTO
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		log.Println(err)
-		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	userId, err := strconv.Atoi(r.PathValue("userId"))
-	if err != nil {
-		log.Println(err)
-		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if uint(userId) != authUser.ID {
-		log.Println(err)
-		util.JSONResponse(w, "forbidden", http.StatusForbidden)
-		return
-	}
-
-	input.ID = uint(userId)
-	err = uh.UserUseCase.UpdateUserPassword(input)
-	if err != nil {
-		log.Println(err)
-		util.JSONResponse(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	util.JSONResponse(w, "successs", http.StatusOK)
 }
