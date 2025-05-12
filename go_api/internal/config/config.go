@@ -30,9 +30,13 @@ type Config struct {
 }
 
 func NewConfigParser(envFilePath string) (*Config, error) {
-	_ = godotenv.Load(envFilePath)
+	err := godotenv.Load(envFilePath)
+	if err != nil {
+		log.Println("Error loading environment file", err)
+		return nil, err
+	}
 	cnf := Config{}
-	err := envconfig.Process("", &cnf)
+	err = envconfig.Process("", &cnf)
 	if err != nil {
 		log.Println(err)
 		return nil, err
