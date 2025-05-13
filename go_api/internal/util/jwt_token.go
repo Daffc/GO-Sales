@@ -1,6 +1,7 @@
 package util
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Daffc/GO-Sales/domain"
@@ -8,6 +9,13 @@ import (
 )
 
 func NewAccessToken(user *domain.User, jwtSigningKey []byte, JwtSessionDuration uint) (string, error) {
+
+	if user == nil {
+		return "", errors.New("user cannot be nil")
+	}
+	if len(jwtSigningKey) == 0 {
+		return "", errors.New("jwtSigningKey cannot be empty")
+	}
 
 	claims := domain.UserClaims{
 		ID:    user.ID,
