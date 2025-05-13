@@ -36,19 +36,6 @@ func NewAccessToken(user *domain.User, jwtSigningKey []byte, JwtSessionDuration 
 	return token, nil
 }
 
-func IsAuthorized(requestToken string, jwtSigningKey []byte) (bool, error) {
-	_, err := jwt.Parse(
-		requestToken,
-		func(token *jwt.Token) (interface{}, error) {
-			return jwtSigningKey, nil
-		})
-	if err != nil {
-		return false, err
-	}
-
-	return true, nil
-}
-
 func RecoverUserFromToken(t string, jwtSigningKey []byte) (*domain.User, error) {
 	token, err := jwt.ParseWithClaims(
 		t,
