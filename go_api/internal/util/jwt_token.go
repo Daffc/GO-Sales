@@ -48,8 +48,12 @@ func RecoverUserFromToken(t string, jwtSigningKey []byte) (*domain.User, error) 
 	}
 
 	userClaims, ok := token.Claims.(*domain.UserClaims)
-	if !ok {
-		return nil, err
+	if !ok || !token.Valid {
+		return nil, errors.New("invalid token claims")
+	}
+
+	if userClaims.ID == 0 {
+		return nil, errors.New("invalid token claims: missing required fields")
 	}
 
 	user := &domain.User{
