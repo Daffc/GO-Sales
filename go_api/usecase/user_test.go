@@ -203,3 +203,73 @@ func TestListUsers(t *testing.T) {
 		})
 	}
 }
+
+func TestFindUserById(t *testing.T) {
+
+	mockUserRepository := new(mockUserRepository)
+
+	testCases := []struct {
+		name                     string
+		input                    uint
+		mockUserRepositoryInput  uint
+		mockUserRepositoryReturn *domain.User
+		mockUserRepositoryError  error
+		expectedOutput           interface{}
+		expectedError            interface{}
+	}{
+		{
+			name:                    "Success",
+			input:                   1,
+			mockUserRepositoryInput: 1,
+			mockUserRepositoryReturn: &domain.User{
+				ID:        1,
+				Name:      "User1",
+				Email:     "user1@example.com",
+				Password:  "Password@1",
+				CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+			},
+			mockUserRepositoryError: nil,
+			expectedOutput: &dto.UserOutputDTO{
+				ID:        1,
+				Name:      "User1",
+				Email:     "user1@example.com",
+				CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+			},
+			expectedError: nil,
+		},
+		{
+			name:                     "User not found",
+			input:                    100,
+			mockUserRepositoryInput:  100,
+			mockUserRepositoryReturn: nil,
+			mockUserRepositoryError:  gorm.ErrRecordNotFound,
+			expectedOutput:           nil,
+			expectedError:            gorm.ErrRecordNotFound,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockUserRepository.ExpectedCalls = nil
+
+			mockUserRepository.On("FindUserById", tc.mockUserRepositoryInput).Return(tc.mockUserRepositoryReturn, tc.mockUserRepositoryError)
+
+			userUseCase := NewUserUseCase(mockUserRepository)
+
+			uo, err := userUseCase.FindUserById(tc.mockUserRepositoryInput)
+
+			if tc.expectedError != nil {
+				assert.Error(t, err, "Expected error")
+				assert.Empty(t, uo, "Expected Users List to be nil")
+				assert.Equal(t, err, tc.expectedError, "Expected FindUserById error to match.")
+
+			} else {
+				assert.NoError(t, err, "Did not expect an error but got one")
+				assert.NotEmpty(t, uo, "Expected Users list not to be nil")
+				assert.Equal(t, uo, tc.expectedOutput, "Expected FindUserById output to match.")
+			}
+		})
+	}
+}
