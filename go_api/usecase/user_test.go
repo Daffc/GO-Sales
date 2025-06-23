@@ -120,3 +120,86 @@ func TestCreateUser(t *testing.T) {
 		})
 	}
 }
+
+func TestListUsers(t *testing.T) {
+
+	mockUserRepository := new(mockUserRepository)
+
+	testCases := []struct {
+		name                     string
+		mockUserRepositoryReturn []*domain.User
+		mockUserRepositoryError  error
+		expectedOutput           interface{}
+		expectedError            interface{}
+	}{
+		{
+			name: "Success",
+			mockUserRepositoryReturn: []*domain.User{
+				&domain.User{
+					ID:        1,
+					Name:      "User1",
+					Email:     "user1@example.com",
+					Password:  "Password@1",
+					CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+				&domain.User{
+					ID:        2,
+					Name:      "User2",
+					Email:     "user2@example.com",
+					Password:  "Password@2",
+					CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+			mockUserRepositoryError: nil,
+			expectedOutput: []*dto.UserOutputDTO{
+				&dto.UserOutputDTO{
+					ID:        1,
+					Name:      "User1",
+					Email:     "user1@example.com",
+					CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+				&dto.UserOutputDTO{
+					ID:        2,
+					Name:      "User2",
+					Email:     "user2@example.com",
+					CreatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+					UpdatedAt: time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+			expectedError: nil,
+		},
+		{
+			name:                     "Recover users error",
+			mockUserRepositoryReturn: nil,
+			mockUserRepositoryError:  gorm.ErrInvalidDB,
+			expectedOutput:           nil,
+			expectedError:            gorm.ErrInvalidDB,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			mockUserRepository.ExpectedCalls = nil
+
+			mockUserRepository.On("ListUsers").Return(tc.mockUserRepositoryReturn, tc.mockUserRepositoryError)
+
+			userUseCase := NewUserUseCase(mockUserRepository)
+
+			ulo, err := userUseCase.ListUsers()
+
+			if tc.expectedError != nil {
+				assert.Error(t, err, "Expected error")
+				assert.Empty(t, ulo, "Expected Users List to be nil")
+				assert.Equal(t, err, tc.expectedError, "Expected ListUsers error to match.")
+
+			} else {
+				assert.NoError(t, err, "Did not expect an error but got one")
+				assert.NotEmpty(t, ulo, "Expected Users list not to be nil")
+				assert.Equal(t, ulo, tc.expectedOutput, "Expected ListUsers output to match.")
+			}
+		})
+	}
+}
